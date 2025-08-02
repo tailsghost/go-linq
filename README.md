@@ -143,7 +143,3 @@ func main() {
 }
 
 ```
-
-## Лицензия
-
-MIT © tailsghost
