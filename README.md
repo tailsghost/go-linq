@@ -35,7 +35,7 @@ import Enumerable "github.com/tailsghost/go-linq"
   Преобразует в `map` по ключу и значению.
 
 - `Count() int`  
-  Количество элементов в последовательности.
+  Количество элементов в Enumerable.
 
 - `Where(pred func(T) bool) Enumerable[T]`  
   Возвращает только те элементы, которые удовлетворяют условию.
@@ -104,7 +104,7 @@ import Enumerable "github.com/tailsghost/go-linq"
   Группирует элементы по ключу.
 
 - `Join(other Enumerable[U], outerKey func(T) K, innerKey func(U) K, resultSel func(T, U) R) Enumerable[R]`  
-  Соединяет две последовательности по ключам.
+  Соединяет два Enumerable по ключам.
 
 ## Примеры
 ```
