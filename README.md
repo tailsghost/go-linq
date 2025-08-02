@@ -107,7 +107,7 @@ import Enumerable "github.com/tailsghost/go-linq"
   Соединяет две последовательности по ключам.
 
 ## Примеры
-
+```
 package main
 
 import (
