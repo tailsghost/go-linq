@@ -5,7 +5,7 @@
 ## Установка
 
 ```bash
-go get github.com/tailsghost/go-linq@v0.1.0
+go get github.com/tailsghost/go-linq@v0.1.2
 ```
 
 ## Импорт
@@ -108,30 +108,40 @@ import Enumerable "github.com/tailsghost/go-linq"
 
 ## Примеры
 
-```go
 package main
 
 import (
-    "fmt"
-    Enumerable "github.com/tailsghost/go-linq"
+	"fmt"
+
+	Enumerable "github.com/tailsghost/go-linq"
 )
 
-func main() {
-    nums := Enumerable.Range(1, 10).
-        Where(func(x int) bool { return x%2 == 0 })
-
-     results :=   Select(nums,func(x int) int { return x * x })
-
-    fmt.Println("Squares of even numbers:", nums.ToSlice())
-
-    people := []struct { Name string; Age int }{
-        {"Alice", 30}, {"Bob", 20}, {"Charlie", 30},
-    }
-    grouped := Enumerable.From(people).GroupBy(func(p struct{ Name string; Age int }) int {
-        return p.Age
-    })
-    fmt.Println("Grouped by age:", grouped)
+type Person struct {
+	Name string
+	Age  int
 }
+
+func main() {
+	nums := Enumerable.Range(1, 10).
+		Where(func(x int) bool { return x%2 == 0 })
+
+	results := Enumerable.Select(nums, func(x int) int { return x * x })
+
+	fmt.Println("Squares of even numbers:", results.ToSlice())
+
+	people := []Person{
+		{"Alice", 30},
+		{"Bob", 20},
+		{"Charlie", 30},
+		{"Dave", 20},
+	}
+
+	grouped := Enumerable.GroupBy(Enumerable.From(people), func(p Person) int {
+		return p.Age
+	})
+	fmt.Println("Grouped by age:", grouped)
+}
+
 ```
 
 ## Лицензия
