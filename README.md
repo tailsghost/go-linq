@@ -121,13 +121,17 @@ type Person struct {
 	Age  int
 }
 
+type Company struct {
+	Name   string
+	Person Person
+}
+
 func main() {
 	nums := Enumerable.Range(1, 10).
-		Where(func(x int) bool { return x%2 == 0 })
+		Where(func(x int) bool { return x%2 == 0 }).
+		Select(func(x int) any { return x * x }).ToSlice()
 
-	results := Enumerable.Select(nums, func(x int) int { return x * x })
-
-	fmt.Println("Squares of even numbers:", results.ToSlice())
+	fmt.Println("Squares of even numbers:", nums)
 
 	people := []Person{
 		{"Alice", 30},
@@ -136,9 +140,23 @@ func main() {
 		{"Dave", 20},
 	}
 
-	grouped := Enumerable.GroupBy(Enumerable.From(people), func(p Person) int {
-		return p.Age
-	})
+	grouped := Enumerable.
+		From(people).
+		Select(func(p Person) any {
+			return Company{Name: "google", Person: p}
+		}).
+		OrderByDescending(
+			func(a any) any {
+				return a.(Company).Person.Name
+			},
+			func(a, b any) int {
+				StringCmp
+			},
+		).
+		GroupBy(func(p any) any {
+			return p.(Company).Person.Age
+		})
+
 	fmt.Println("Grouped by age:", grouped)
 }
 

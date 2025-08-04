@@ -10,6 +10,15 @@ type Enumerable[T any] struct {
 	comparerChain []func(a, b T) int
 }
 
+func StringCmp(a, b string) int {
+	if a < b {
+		return -1
+	} else if a > b {
+		return 1
+	}
+	return 0
+}
+
 // Создает коллекцию чисел начиная с start, длиной count
 func Range(start, count int) Enumerable[int] {
 	slice := make([]int, count)
@@ -253,15 +262,15 @@ func (e Enumerable[T]) Distinct() Enumerable[T] {
 }
 
 // Преобрает T в U
-func (e Enumerable[T]) Cast(castFunc func(T) any) Enumerable[any] {
-	out := make([]any, 0, len(e.src))
+func Cast[T any, U any](e Enumerable[T], castFunc func(T) U) Enumerable[U] {
+	out := make([]U, 0, len(e.src))
 	for _, v := range e.src {
 		out = append(out, castFunc(v))
 	}
-	return Enumerable[any]{src: out}
+	return Enumerable[U]{src: out}
 }
 
-func BuildComparer[T any, K any](
+func BuildComparer[T any, K comparable](
 	key func(T) K,
 	cmp func(a, b K) int,
 	desc bool,
