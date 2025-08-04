@@ -5,7 +5,7 @@
 ## Установка
 
 ```bash
-go get github.com/tailsghost/go-linq@v0.1.2
+go get github.com/tailsghost/go-linq
 ```
 
 ## Импорт
@@ -150,7 +150,7 @@ func main() {
 				return a.(Company).Person.Name
 			},
 			func(a, b any) int {
-				StringCmp
+				return Enumerable.StringCmp(a.(string), b.(string))
 			},
 		).
 		GroupBy(func(p any) any {
