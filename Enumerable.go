@@ -86,12 +86,26 @@ func (e Enumerable[T]) Where(pred func(T) bool) Enumerable[T] {
 }
 
 // Определяет проекцию выбранных значений
-func (e Enumerable[T]) Select(sel func(T) any) Enumerable[any] {
-	out := make([]any, 0, len(e.src))
+func Select[T any, U any](e Enumerable[T], sel func(T) U) Enumerable[U] {
+	out := make([]U, 0, len(e.src))
 	for _, x := range e.src {
 		out = append(out, sel(x))
 	}
-	return Enumerable[any]{src: out}
+	return Enumerable[U]{src: out}
+}
+
+// Сводит набор коллекций в одну
+func SelectMany[T any, U any](e Enumerable[T], sel func(T) []U) Enumerable[U] {
+	total := 0
+	for _, x := range e.src {
+		total += len(sel(x))
+	}
+
+	out := make([]U, 0, total)
+	for _, x := range e.src {
+		out = append(out, sel(x)...)
+	}
+	return Enumerable[U]{src: out}
 }
 
 // Пропускает первые n элементов
@@ -270,7 +284,7 @@ func Cast[T any, U any](e Enumerable[T], castFunc func(T) U) Enumerable[U] {
 	return Enumerable[U]{src: out}
 }
 
-func BuildComparer[T any, K comparable](
+func BuildComparer[T any, K any](
 	key func(T) K,
 	cmp func(a, b K) int,
 	desc bool,
@@ -286,9 +300,10 @@ func BuildComparer[T any, K comparable](
 }
 
 // OrderBy сортирует элементы по возрастанию
-func (e Enumerable[T]) OrderBy(
-	key func(T) any,
-	cmp func(a, b any) int,
+func OrderBy[T any, K any](
+	e Enumerable[T],
+	key func(T) K,
+	cmp func(a, b K) int,
 ) Enumerable[T] {
 	comparer := BuildComparer(key, cmp, false)
 	out := e.ToSlice()
@@ -297,9 +312,10 @@ func (e Enumerable[T]) OrderBy(
 }
 
 // OrderByDescending сортирует элементы по убыванию
-func (e Enumerable[T]) OrderByDescending(
-	key func(T) any,
-	cmp func(a, b any) int,
+func OrderByDescending[T any, K any](
+	e Enumerable[T],
+	key func(T) K,
+	cmp func(a, b K) int,
 ) Enumerable[T] {
 	comparer := BuildComparer(key, cmp, true)
 	out := e.ToSlice()
@@ -308,9 +324,10 @@ func (e Enumerable[T]) OrderByDescending(
 }
 
 // ThenBy добавляет вторичный ключ сортировки по возрастанию
-func (e Enumerable[T]) ThenBy(
-	key func(T) any,
-	cmp func(a, b any) int,
+func ThenBy[T any, K any](
+	e Enumerable[T],
+	key func(T) K,
+	cmp func(a, b K) int,
 ) Enumerable[T] {
 	if e.comparerChain == nil {
 		panic("ThenBy requires OrderBy first")
@@ -331,9 +348,10 @@ func (e Enumerable[T]) ThenBy(
 }
 
 // ThenByDescending добавляет вторичный ключ сортировки по убыванию
-func (e Enumerable[T]) ThenByDescending(
-	key func(T) any,
-	cmp func(a, b any) int,
+func ThenByDescending[T any, K any](
+	e Enumerable[T],
+	key func(T) K,
+	cmp func(a, b K) int,
 ) Enumerable[T] {
 	if e.comparerChain == nil {
 		panic("ThenByDescending requires OrderBy first")
@@ -354,8 +372,8 @@ func (e Enumerable[T]) ThenByDescending(
 }
 
 // Группирует элементы по ключу в map.
-func (e Enumerable[T]) GroupBy(key func(T) any) map[any][]T {
-	m := make(map[any][]T)
+func GroupBy[T, K comparable](e Enumerable[T], key func(T) K) map[K][]T {
+	m := make(map[K][]T)
 	for _, x := range e.src {
 		m[key(x)] = append(m[key(x)], x)
 	}
@@ -363,13 +381,14 @@ func (e Enumerable[T]) GroupBy(key func(T) any) map[any][]T {
 }
 
 // Выполняет соединение двух Enumerable по ключам
-func (e Enumerable[T]) Join(
-	other Enumerable[any],
-	outerKey func(T) any,
-	innerKey func(any) any,
-	resultSel func(T, any) any,
-) Enumerable[any] {
-	out := make([]any, 0)
+func Join[T any, U any, K comparable, R any](
+	e Enumerable[T],
+	other Enumerable[U],
+	outerKey func(T) K,
+	innerKey func(U) K,
+	resultSel func(T, U) R,
+) Enumerable[R] {
+	out := make([]R, 0)
 	inSlice := other.ToSlice()
 	for _, o := range e.src {
 		ok := outerKey(o)
@@ -379,5 +398,5 @@ func (e Enumerable[T]) Join(
 			}
 		}
 	}
-	return Enumerable[any]{src: out}
+	return Enumerable[R]{src: out}
 }
