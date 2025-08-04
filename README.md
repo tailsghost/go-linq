@@ -43,6 +43,10 @@ import Enumerable "github.com/tailsghost/go-linq"
 - `Select[U any](sel func(T) U) Enumerable[U]`  
   Проецирует элементы в новый тип.
 
+- `func SelectMany[T any, U any](e Enumerable[T], sel func(T) []U) Enumerable[U]`
+  Сводит коллекции в одну
+
+
 - `Skip(n int) Enumerable[T]`  
   Пропускает первые `n` элементов.
 
