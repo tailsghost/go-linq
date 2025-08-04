@@ -77,12 +77,12 @@ func (e Enumerable[T]) Where(pred func(T) bool) Enumerable[T] {
 }
 
 // Определяет проекцию выбранных значений
-func Select[T any, U any](e Enumerable[T], sel func(T) U) Enumerable[U] {
-	out := make([]U, 0, len(e.src))
+func (e Enumerable[T]) Select(sel func(T) any) Enumerable[any] {
+	out := make([]any, 0, len(e.src))
 	for _, x := range e.src {
 		out = append(out, sel(x))
 	}
-	return Enumerable[U]{src: out}
+	return Enumerable[any]{src: out}
 }
 
 // Пропускает первые n элементов
